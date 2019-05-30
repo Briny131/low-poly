@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../js/sobel.js"></script>
+    <script src="../js/triangle.js"></script>
+    <script src="../js/image.js"></script>
+    <script src="../js/poisson.js"></script>
+    <script src="./echarts.min.js"></script>
+    <script src="./test.js"></script>
+    <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        .left{
+            margin-left:20px;
+            float:left
+        }
+        .btn{
+            border-radius:4px;
+            width:100px;
+            height:30px;
+            border:1px solid #c0c0c0;
+            text-align: center;
+            line-height:30px;
+            position:relative
+        }
+        .btn:active{
+            background:#c0c0c0
+        }
+    </style>
+</head>
+<body style="height:100%">
+        <div style="overflow: hidden;">
+            <div class="left">
+                <div id="file-c" class="btn">选择文件</div>
+                <input type="file" style="display: none;" id="file" onchange="upImg(this)">
+            </div>
+            <div class="left">
+                <div id="similar" class="btn">相似度</div>
+            </div>
+        </div>
+    <div id="container" style="height: 100%"></div>
+    <div style="display:none">
+        <canvas id="origin"></canvas>
+        <canvas id="result"></canvas>
+    </div>
+</body>
+<script>
+    document.getElementById('file-c').onclick = function(e){
+        document.getElementById('file').click()
+    }
+    document.getElementById('similar').onclick = similar
+    var origin=document.getElementById('origin'),   
+        result=document.getElementById('result'),
+        ctx=origin.getContext('2d'),
+        ctx1=result.getContext('2d'),
+        img,img1,sobel,sobelD
+    function upImg(that){
+        var file = that.files[0], // 获取文件
+        imageType = /^image\//,
+        reader = '';
+        if (!imageType.test(file.type)) {
+            alert("请选择图片！");
+            return;
+        }   
+        if (window.FileReader) {
+            reader = new FileReader();
+        }else {
+            alert("您的浏览器不支持图片预览功能，如需该功能请升级您的浏览器！");
+            return;
+        }
+        // 读取完成    
+        reader.onload = function (event) {
+            img=new Img(event.target.result)
+            img1=event.target.result
+            img.init(origin,ctx)
+            img.getImgData(ctx).then(res=>{
+                ceshi(res)
+            })
+            
+        };
+        reader.readAsDataURL(file);
+    }
+
+    
+</script>
+</html>

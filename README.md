@@ -15,3 +15,5 @@
 
 ![效果图](https://github.com/Briny131/low-poly/blob/master/image/%E5%90%8E.png?raw=true)
 ![效果图](https://github.com/Briny131/low-poly/blob/master/image/%E4%BC%98%E5%8C%96.png?raw=true)
+
+图片相似度参考[感知哈希算法](https://github.com/Weibozzz/image-similar-compare)

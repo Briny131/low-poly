@@ -41,13 +41,13 @@ Img.prototype={
         ctx.strokeStyle = '#fff'
         ctx.lineWidth = 2
         // ctx.fillRect(0, 0, origin.width, origin.height)
-        // sobel.lightData.forEach(point => {
-        //     ctx.beginPath();
-        //     ctx.arc(point.x, point.y, 2, 0, Math.PI * 2, true);
-        //     ctx.closePath();
-        //     ctx.fillStyle = '#fb2';
-        //     ctx.fill();
-        // })
+        sobel.lightData.forEach(point => {
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 1, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.fillStyle = '#fb2';
+            ctx.fill();
+        })
         for(let i = 1; i < 10; i++){
             ctx.moveTo(0 , i * H)
             ctx.lineTo(origin.width , i * H)

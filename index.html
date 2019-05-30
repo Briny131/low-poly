@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./js/sobel.js"></script>
+    <script src="./js/triangle.js"></script>
+    <script src="./js/image.js"></script>
+    <script src="./js/poisson.js"></script>
+    <script src="./js/clickEvent.js"></script>
+    <style>
+        .left{
+            margin-left:20px;
+            float:left
+        }
+        .btn{
+            border-radius:4px;
+            width:100px;
+            height:30px;
+            border:1px solid #c0c0c0;
+            text-align: center;
+            line-height:30px;
+            position:relative
+        }
+        .btn:active{
+            background:#c0c0c0
+        }
+        .color{
+            width:20px;
+            height:15px;
+            border-radius:4px;
+            background:#999;
+            position:relative;
+            z-index:100;
+            display:inline-block;
+        }
+        .color::after{
+            content:'';
+            display:block;
+            border-top:7px solid ;
+            border-right: 5px solid transparent;
+            border-left: 5px solid transparent;
+            position:absolute;
+            right:-12px;
+            top:4px;
+        }
+    </style>
+</head>
+<body style="height:100%">
+    <div style="overflow: hidden;">
+        <div class="left">
+            <div id="file-c" class="btn">选择文件</div>
+            <input type="file" style="display: none;" id="file" onchange="upImg(this)">
+        </div>
+        <div class="left">
+            <div id="edgeCheck" class="btn">边缘检测</div>
+        </div>
+        <div class="left">
+            <div id="delaunay" style="height:30px;width:120px;line-height:30px;border:1px solid #c0c0c0;border-radius:4px;">
+                三角剖分网
+                <input type="color" id="color" style="display:none">
+                <div class="color"></div>
+            </div>
+        </div>
+        <div class="left">
+            <div id="reflesh" class="btn">刷新</div>
+        </div>
+        <div class="left">
+            <input style="height:25px;" type="text" id="count" value='2000'>
+        </div>
+    </div>
+    <canvas id="origin"></canvas>
+    <canvas id="result"></canvas>
+</body>
+<script>
+    document.getElementById('file-c').onclick = function(e){
+        document.getElementById('file').click()
+    }
+    document.getElementById('edgeCheck').onclick = edgeCheck
+    document.getElementById('delaunay').onclick = Line
+    document.getElementById('reflesh').onclick = reflesh
+    document.getElementsByClassName('color')[0].onclick = function(e){
+        e.stopPropagation()
+        document.getElementById('color').click()
+    }
+    document.getElementById('color').onclick = function(e){
+        e.stopPropagation()
+    }
+    document.getElementById('color').onchange = function(){
+        color = this.value;
+        document.getElementsByClassName('color')[0].style.background = this.value
+        if(sanjiao){
+            T_yn = false
+            Line()
+        }
+    }
+    var input = document.getElementById('count')
+    var origin=document.getElementById('origin'),   
+        result=document.getElementById('result'),
+        ctx=origin.getContext('2d'),
+        ctx1=result.getContext('2d'),
+        img,img1,sobel,sobelD,S_yn = false, T_yn = false, color ='#999', sanjiao
+    function upImg(that){
+        var file = that.files[0], // 获取文件
+        imageType = /^image\//,
+        reader = '';
+        if (!imageType.test(file.type)) {
+            alert("请选择图片！");
+            return;
+        }   
+        if (window.FileReader) {
+            reader = new FileReader();
+        }else {
+            alert("您的浏览器不支持图片预览功能，如需该功能请升级您的浏览器！");
+            return;
+        }
+        // 读取完成    
+        reader.onload = function (event) {
+            img=new Img(event.target.result)
+            img1=event.target.result
+            img.init(origin,ctx)
+            img.getImgData(ctx).then(res=>{
+                sobel = Sobel(res)
+                input.addEventListener('change', function(e){
+                    sobel.total = e.target.value
+                    reflesh()
+                })
+                Timer.start()
+                sobelD = sobel.dealWith8()
+                result.width = origin.width
+                result.height = origin.height
+                sanjiao = MakeLowPoly1(result,ctx1,sobel.lightData,sobel.data)
+                Timer.stop()
+                sanjiao.forEach((x)=>{
+                    ctx1.beginPath();
+                    ctx1.lineWidth=1;
+                    ctx1.moveTo(x.p1.x, x.p1.y);
+                    ctx1.lineTo(x.p2.x, x.p2.y);
+                    ctx1.lineTo(x.p3.x, x.p3.y);
+                    ctx1.closePath();
+                    ctx1.fillStyle=x.color
+                    ctx1.fill()
+                    ctx1.strokeStyle =T_yn? color:x.color
+                    ctx1.stroke();
+                })
+            })
+            
+        };
+        reader.readAsDataURL(file);
+    }
+
+    
+</script>
+</html>

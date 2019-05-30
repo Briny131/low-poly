@@ -9,7 +9,7 @@
             this.data=data.data
             this.height=data.height
             this.width=data.width
-            this.total 
+            this.total = 2000
             // this.posData
             this.X=[
                 [-1,0,1],

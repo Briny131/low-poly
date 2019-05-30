@@ -1,5 +1,6 @@
 
 function Line(){
+    T_yn = !T_yn
     ctx1.clearRect(0, 0, origin.width, origin.height);
     sanjiao.forEach((x)=>{
         ctx1.beginPath();
@@ -178,10 +179,10 @@ function edgeCheck(){
 }
 
 function reflesh(){
-    stats.begin();
+    Timer.start()
     sobelD=sobel.dealWith8()
     sanjiao=MakeLowPoly1(result,ctx1,sobel.lightData,sobel.data)
-    stats.end();
+    Timer.stop()
     ctx1.clearRect(0, 0, origin.width, origin.height);
     sanjiao.forEach((x)=>{
         ctx1.beginPath();
@@ -196,21 +197,26 @@ function reflesh(){
         ctx1.stroke();
     })
     edgeCheck()
-    similar(ctx.getImageData(0, 0, origin.width, origin.height), ctx1.getImageData(0, 0, origin.width, origin.height))
     // console.log(Timer.getTime())
 }
 var Timer={
     data:undefined,
     start:function(){
-        Timer.data=new Date();
+        Timer.data = new Date();
     },
     stop:function(){
-        var time=Timer.data;
-        if(time)
-            Timer.data=new Date()-time;
-    },
-    getTime:function(){
-        return Timer.data/1000;
+        var time = Timer.data;
+        if(time){
+            Timer.data = (new Date() - time) / 1000;
+        }
+        var d = document.createElement('div')
+        d.setAttribute('id', 'time')
+        d.innerText = Timer.data + 's'
+        d.setAttribute('style', 'width:100px;height:40px;font-size:20px;background:rgba(16, 253, 205, 0.4);position:absolute;bottom:30px;left:30px;text-align:center;line-height:40px')
+        document.getElementsByTagName('body')[0].appendChild(d)
+        setTimeout(function(){
+            document.getElementById('time').remove()
+        },2000)
     }
 };
 function similarTest(result){
